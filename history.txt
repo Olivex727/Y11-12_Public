@@ -1,0 +1,70 @@
+VERSION HISTORY:
+
+V0.1 (31/8/18): 0%
+
+V0.1.1 (1/9): 0%
+
+V0.1.2 (21/9): 0%
+
+V0.2 (3/5/19): 5%
+- Planned for main game
+- First run of game
+- Added First test functions
+
+V0.3 (4/5): 10%
+- Added function Module
+- Added Material class
+- First test of Algorithm
+
+V0.3.1 (4/5): 10%
+- Moved platform to VS dotnet
+
+V0.4 (5/5): 25%
+- Added NPC, Market and Options classes
+- Added main module functions
+- Setup for move to VS, Algorithm and file management
+- Added functions for the other classes
+
+V0.5 (5/5): 25%
+- Added Facility class
+- Added main functions
+
+V0.6 (8/5) [574]: 27.5%
+- Added print function
+- Properly testable
+- Can iterate/simulate material Algorithm
+
+V0.6.1 (10/5) [818]: 30%
+- Completed material fluctuations
+
+V0.7 (10/5) [881]: 37.5%
+- Completed market fluctuations
+- Completed facility fluctuations
+
+V0.8 (12/5) [935]: 38.75%
+- Added Material Monetary algorithim
+- Added the NPCturn Function
+
+V0.8.1 (13/5) [1009]: 43%
+- Made Majority of NPC descision algorithim
+- Now receives inputs for iterations
+
+Planned Versions:
+
+V0.8 - V0.9:
+- Add onto the NPC intellegence algorithim
+
+V0.9 - Beta 1.0:
+- Finish NPC intelligence Algorithm
+- Add Market and Facility top up Algorithms
+
+Beta Version:
+- Add other requirements (e.g Banking, Trade Routes)
+
+Alpha Version:
+- Move to Visual Studio
+- Add Interface to game
+- Add File management
+
+Full Version:
+- Add Extra stuff
