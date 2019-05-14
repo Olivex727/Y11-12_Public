@@ -49,6 +49,10 @@ V0.8.1 (13/5) [1009]: 43%
 - Made Majority of NPC descision algorithim
 - Now receives inputs for iterations
 
+V0.8.2 (14/5) [1065]: 45.5%
+- Made the sponsor formula (With Bug)
+- Made the GoPublic formula
+
 Planned Versions:
 
 V0.8 - V0.9:

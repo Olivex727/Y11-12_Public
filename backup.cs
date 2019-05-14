@@ -8,14 +8,14 @@ using System.Text;
 
 //===NOTES:
 //
-//Project progress: 43%
+//Project progress: 45.5%
 //+1.25% for each section in NPC
 //+2% for the Top Ups
 /*
 | Module Library = 25% | Algorithims = 25% | Extras = 15% | Interface = 25% | File Management = 10% |
-                                       ^
+                                        ^
 */
-//Current version: 0.8.1
+//Current version: 0.8.2
 //
 //When on VS:
 //- Complete setInterface()
@@ -71,7 +71,7 @@ namespace TradeGame
                 type = "r",
                 cost = 460.32,
                 influx = 9,
-                amount = 10,
+                amount = 60,
                 total = 10
             };
             Material Copper = new Material()
@@ -103,7 +103,7 @@ namespace TradeGame
                 cost = 1,
                 influx = 0,
                 amount = 10000,
-                total = 10000,
+                total = 12000,
                 anchor = "Central"
             };
             Materials.Add(Base);
@@ -121,10 +121,20 @@ namespace TradeGame
             {
                 name = "Tenex",
                 type = "c",
-                intellegence = 80,
+                intellegence = 72,
                 location = "Central"
             };
-            Players.Add(Tenex);
+
+
+            NPC Sciton = new NPC()
+            {
+                name = "Sciton",
+                type = "c",
+                intellegence = 95,
+                location = "Central"
+            };
+
+
             Facility Central1 = new Facility()
             {
                 name = "Cen1s",
@@ -146,6 +156,8 @@ namespace TradeGame
 
             Locs.Add(Central1);
             Locs.Add(IronMine);
+            Players.Add(Sciton);
+            Players.Add(Tenex);
 
             foreach (NPC n in Players)
             {
@@ -160,6 +172,8 @@ namespace TradeGame
             Tenex.manageInvent("add", Copper, 1);
             Tenex.manageInvent("add", Uranium, 7);
             Tenex.manageInvent("add", Base, 1000);
+            Sciton.manageInvent("add", Iron, 70);
+            Sciton.manageInvent("add", Base, 1000);
 
             IronMine.developProperty(Tenex, Iron);
 
@@ -197,6 +211,10 @@ namespace TradeGame
                 for (int i = 0; i < mod.order.Count() - 1; i++)
                 {
                     mod.takeTurn(mod.turn, mod.getClass(mod.turn)[0], mod.getClass(mod.turn)[1]);
+                }
+                foreach (NPC n in mod.Players)
+                {
+                    n.prevNet = n.netWorth();
                 }
                 mod.time += 0.25;
 
@@ -533,7 +551,17 @@ namespace TradeGame
                         Dictionary<string, double[]> dv = NPCturn(n);
                         foreach (string s in dv.Keys)
                         {
-                            if (per % time == 0) { Console.WriteLine("\n" + s + ", " + dv[s][0].ToString()); }
+                            if (per % time == 0)
+                            {
+                                Console.WriteLine("\n" + s + ", " + dv[s][0].ToString());
+                            }
+                        }
+                        if (!n.pub)
+                        {
+                            if (per % time == 0)
+                            {
+                                Console.WriteLine("\n" + n.name + ", split: " + dv[n.name][1].ToString() + ", keep: " + dv[n.name][2].ToString());
+                            }
                         }
                     }
                 }
@@ -625,7 +653,7 @@ namespace TradeGame
                     marc[0] = marc[0] + ma.netWorth(Locs, m) - nw;
                 }
                 //Get average of material net worth
-                marc[0] = marc[0] / Materials.Count;
+                //marc[0] = marc[0] / Materials.Count;
                 l.Add(ma.name, marc);
 
                 //Same material calculation but for warehouses
@@ -636,7 +664,8 @@ namespace TradeGame
                     if (!f.developed)
                     {
                         //Console.WriteLine("{0}, {1}", f.name, (f.cap * f.cost - f.netWorth("worth")));
-                        fnet[0] = (f.cap * f.cost - f.netWorth("worth")) / 100;
+                        fnet[0] = (f.cap * f.cost - f.netWorth("worth"));
+                        fnet[0] = fnet[0] / Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(fnet[0]))) - 2);
                         //fnet[0] = fnet[0] / Math.Pow(10, Math.Log10(fnet[0]) - 3);
 
                         l.Add(f.name + "_ud", fnet);
@@ -644,7 +673,8 @@ namespace TradeGame
                     else if (f.developed)
                     {
                         //Console.WriteLine("{0}, {1}", f.name, (f.netWorth("worth") - 3 * f.netWorth("prod")));
-                        fnet[0] = (f.netWorth("worth") - 3 * f.netWorth("prod")) / 100;
+                        fnet[0] = (f.netWorth("worth") - 3 * f.netWorth("prod"));
+                        fnet[0] = fnet[0] / Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(fnet[0]))) - 2);
                         l.Add(f.name + "_sell", fnet);
 
                         if (f.type == "s")
@@ -671,11 +701,40 @@ namespace TradeGame
 
             }
 
+            double[] npc = new double[2];
             //NPC Calculations
-
-
+            //Sponsors act as essentially a deed that if the NPC goes bankrupt, the Sponsor will get all the debt
+            foreach (NPC m in Players)
+            {
+                if (m.name != n.name)
+                {
+                    //Console.WriteLine(m.name + ", " + m.netWorth().ToString() + ", " + m.prevNet.ToString());
+                    npc[0] = m.netWorth() - m.prevNet;
+                    npc[0] = npc[0] / Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(npc[0]))) - 2);
+                    l.Add(m.name, npc);
+                }
+            }
 
             //GoPublic & Others
+            if (!n.pub)
+            {
+                int mat = 0;
+                int split = 1000;
+
+                foreach (Material m in Materials) { mat += m.amount; }
+                split = mat / Materials.Count;
+
+                int keep = split / 2;
+                keep = Convert.ToInt32(keep * n.prevNet / n.netWorth());
+
+                double[] gp = new double[3];
+
+                gp[0] = n.netWorth() / (split - keep);
+                gp[1] = split;
+                gp[2] = keep;
+
+                l.Add(n.name, gp);
+            }
 
             return l;
         }
@@ -887,7 +946,7 @@ namespace TradeGame
         //money is the total net worth of the company/party
         //split only is needed for the company
         //NOTE: Add after 'goPublic', order.Add(count, m); count + 1;
-        public Material goPublic(double money, List<NPC> lnpc, int split = 1, int keep = 0)
+        public Material goPublic(List<NPC> lnpc, int split = 1, int keep = 0)
         {
             string key = "";
             Material m = new Material();
@@ -903,7 +962,7 @@ namespace TradeGame
 
                 m.name = name + "_mat";
                 m.type = key;
-                m.cost = money / split;
+                m.cost = netWorth() / split;
                 m.amount = split - keep;
                 m.total = split;
                 m.influx = 0;
