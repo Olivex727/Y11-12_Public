@@ -8,14 +8,14 @@ using System.Text;
 
 //===NOTES:
 //
-//Project progress: 45.5%
+//Project progress: 46.75%
 //+1.25% for each section in NPC
 //+2% for the Top Ups
 /*
 | Module Library = 25% | Algorithims = 25% | Extras = 15% | Interface = 25% | File Management = 10% |
-                                        ^
+                                          ^
 */
-//Current version: 0.8.2
+//Current version: 0.8.3
 //
 //When on VS:
 //- Complete setInterface()
@@ -549,13 +549,35 @@ namespace TradeGame
                     if (n.name == name)
                     {
                         Dictionary<string, double[]> dv = NPCturn(n);
-                        foreach (string s in dv.Keys)
+                        /*
+                        foreach(string s in dv.Keys)
                         {
-                            if (per % time == 0)
-                            {
-                                Console.WriteLine("\n" + s + ", " + dv[s][0].ToString());
+                            if(per % time == 0){
+                                Console.WriteLine("\n"+s+", "+ dv[s][0].ToString()); 
                             }
                         }
+                        */
+
+                        //Compile into list
+                        List<double> tally = new List<double>();
+                        foreach (string s in dv.Keys) { tally.Add(dv[s][0]); }
+                        tally.Sort();
+                        //foreach (double d in tally) { Console.WriteLine(d); }
+
+                        int r = rnd.Next(tally.Count * (n.intellegence / 100), tally.Count - 1);
+                        double[] t = tally.ToArray();
+                        //Console.WriteLine("{0}, {1}",r,tally.Count);
+                        double num = t[r];
+                        string choice = "";
+
+                        foreach (string s in dv.Keys)
+                        {
+                            if (dv[s][0] == num) { choice = s; }
+                        }
+                        //Console.WriteLine(n.name + ": " + choice);
+
+                        //Find best option
+                        /*
                         if (!n.pub)
                         {
                             if (per % time == 0)
@@ -563,6 +585,7 @@ namespace TradeGame
                                 Console.WriteLine("\n" + n.name + ", split: " + dv[n.name][1].ToString() + ", keep: " + dv[n.name][2].ToString());
                             }
                         }
+                        */
                     }
                 }
                 //
@@ -710,8 +733,8 @@ namespace TradeGame
                 {
                     //Console.WriteLine(m.name + ", " + m.netWorth().ToString() + ", " + m.prevNet.ToString());
                     npc[0] = m.netWorth() - m.prevNet;
-                    npc[0] = npc[0] / Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(npc[0]))) - 2);
-                    l.Add(m.name, npc);
+                    npc[0] = npc[0] / (1 + Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(npc[0]))) - 2));
+                    l.Add(m.name + "_sponsor", npc);
                 }
             }
 
@@ -924,6 +947,8 @@ namespace TradeGame
         public string sponsor { get; set; } //String array
         //2 feilds, Company and Party, unique value
         //Can only do such for public organisations
+
+        public string anchor { get; set; } //ONLY TYPE 'p'
 
         public bool pub = false;
 
