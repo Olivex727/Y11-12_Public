@@ -55,6 +55,8 @@ V0.8.2 (14/5) [1065]: 45.5%
 
 V0.8.3 (15/5) [1091]: 46.75%
 - Completed Groundwork for NPC descision algorithim
+- V0.8.3.1 (17/5) [1230]: 46.75%
+  - Under Matenance, Faulty NPC Algortithim
 
 Planned Versions:
 
